@@ -1,0 +1,57 @@
+# Справочник дисциплин (БД)
+# Каждый объект здесь — это "золотой стандарт" данных для конкретного курса
+
+disciplines:
+  - code: "Б1.В.ДВ.01.01"
+    name: "Теория вычислительных процессов"
+    direction:
+      code: "09.03.01"
+      name: "Информатика и вычислительная техника"
+      profile: "Программное обеспечение вычислительной техники и автоматизированных систем"
+    year: 2026
+    form_of_study: "Очная"
+    semester: 6
+    credits: 4
+    hours:
+      total: 144
+      lecture: 32
+      practice: 0
+      laboratory: 32
+      srs: 80
+      attestation: 0
+    attestation_form: "Зачёт"
+    competencies: 
+      - "ОПК-8"
+      - "ПК-1"
+    developer: "Сергей Владимирович Ветров"
+    status: "draft" # draft, ready, approved
+    files:
+      rp: "РП.ТеорияВычислительныхПроцессов.2026.md"
+      fos: "ФОС.ТеорияВычислительныхПроцессов.2026.md"
+
+  - code: "Б1.О.XX" # Пример другой дисциплины
+    name: "Дискретная математика"
+    direction:
+      code: "09.03.01"
+      name: "Информатика и вычислительная техника"
+      profile: "Программное обеспечение вычислительной техники и автоматизированных систем"
+    year: 2026
+    form_of_study: "Очная"
+    semester: 2
+    credits: 5
+    hours:
+      total: 180
+      lecture: 48
+      practice: 32
+      laboratory: 0
+      srs: 90
+      attestation: 10
+    attestation_form: "Экзамен"
+    competencies:
+      - "УК-1"
+      - "ОПК-2"
+    developer: "Иванов Иван Иванович"
+    status: "idea"
+    files:
+      rp: null
+      fos: null
