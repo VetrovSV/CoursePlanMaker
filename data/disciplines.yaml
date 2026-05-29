@@ -2,7 +2,7 @@
 # Каждый объект здесь — это "золотой стандарт" данных для конкретного курса
 
 disciplines:
-  - code: "Б1.В.ДВ.01.01"
+  - code: "Б1.В.ДВ.01.1"
     name: "Теория вычислительных процессов"
     direction:
       code: "09.03.01"
@@ -24,12 +24,117 @@ disciplines:
       - "ОПК-8"
       - "ПК-1"
     developer: "Сергей Владимирович Ветров"
-    status: "draft" # draft, ready, approved
+    status: "draft"
     files:
       rp: "РП.ТеорияВычислительныхПроцессов.2026.md"
       fos: "ФОС.ТеорияВычислительныхПроцессов.2026.md"
 
-  - code: "Б1.О.XX" # Пример другой дисциплины
+  - code: "Б1.О.06"
+    name: "Математический анализ"
+    direction:
+      code: "09.03.01"
+      name: "Информатика и вычислительная техника"
+      profile: "Программное обеспечение вычислительной техники и автоматизированных систем"
+    year: 2026
+    form_of_study: "Очная"
+    semester: 1
+    credits: 5
+    hours:
+      total: 180
+      lecture: 36
+      practice: 0
+      laboratory: 34
+      srs: 110
+      attestation: 0
+    attestation_form: "Зачёт"
+    competencies:
+      - "ОПК-1"
+    developer: "ИВТиПМ"
+    status: "idea"
+    files:
+      rp: null
+      fos: null
+
+  - code: "Б1.О.16"
+    name: "Программирование"
+    direction:
+      code: "09.03.01"
+      name: "Информатика и вычислительная техника"
+      profile: "Программное обеспечение вычислительной техники и автоматизированных систем"
+    year: 2026
+    form_of_study: "Очная"
+    semester: 1
+    credits: 10
+    hours:
+      total: 360
+      lecture: 72
+      practice: 66
+      laboratory: 66
+      srs: 156
+      attestation: 0
+    attestation_form: "Экзамен"
+    competencies:
+      - "ОПК-2"
+      - "ПК-1"
+    developer: "Сергей Владимирович Ветров"
+    status: "idea"
+    files:
+      rp: null
+      fos: null
+
+  - code: "Б1.О.18"
+    name: "Базы данных"
+    direction:
+      code: "09.03.01"
+      name: "Информатика и вычислительная техника"
+      profile: "Программное обеспечение вычислительной техники и автоматизированных систем"
+    year: 2026
+    form_of_study: "Очная"
+    semester: 4
+    credits: 6
+    hours:
+      total: 216
+      lecture: 36
+      practice: 0
+      laboratory: 64
+      srs: 116
+      attestation: 0
+    attestation_form: "Экзамен"
+    competencies:
+      - "ОПК-3"
+    developer: "Сергей Владимирович Ветров"
+    status: "idea"
+    files:
+      rp: null
+      fos: null
+
+  - code: "Б1.О.20"
+    name: "Операционные системы"
+    direction:
+      code: "09.03.01"
+      name: "Информатика и вычислительная техника"
+      profile: "Программное обеспечение вычислительной техники и автоматизированных систем"
+    year: 2026
+    form_of_study: "Очная"
+    semester: 5
+    credits: 4
+    hours:
+      total: 144
+      lecture: 36
+      practice: 0
+      laboratory: 34
+      srs: 74
+      attestation: 0
+    attestation_form: "Зачёт"
+    competencies:
+      - "ОПК-4"
+    developer: "Сергей Владимирович Ветров"
+    status: "idea"
+    files:
+      rp: null
+      fos: null
+
+  - code: "Б1.В.05"
     name: "Дискретная математика"
     direction:
       code: "09.03.01"
@@ -38,19 +143,18 @@ disciplines:
     year: 2026
     form_of_study: "Очная"
     semester: 2
-    credits: 5
+    credits: 4
     hours:
-      total: 180
-      lecture: 48
-      practice: 32
+      total: 144
+      lecture: 36
+      practice: 16
       laboratory: 0
-      srs: 90
-      attestation: 10
-    attestation_form: "Экзамен"
+      srs: 92
+      attestation: 0
+    attestation_form: "Зачёт"
     competencies:
-      - "УК-1"
-      - "ОПК-2"
-    developer: "Иванов Иван Иванович"
+      - "ОПК-1"
+    developer: "ИВТиПМ"
     status: "idea"
     files:
       rp: null
