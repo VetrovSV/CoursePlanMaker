@@ -138,26 +138,28 @@ def create_db(path: str | None = None) -> sqlite3.Connection:
 def add_direction(
     conn: sqlite3.Connection, code: str, name: str, level: str
 ) -> int:
+    row = conn.execute(
+        "SELECT id FROM directions WHERE code = ?", (code,)
+    ).fetchone()
+    if row:
+        return row[0]
     cur = conn.execute(
-        "INSERT OR IGNORE INTO directions (code, name, level) VALUES (?, ?, ?)",
+        "INSERT INTO directions (code, name, level) VALUES (?, ?, ?)",
         (code, name, level),
     )
-    if cur.lastrowid:
-        return cur.lastrowid
-    return conn.execute(
-        "SELECT id FROM directions WHERE code = ?", (code,)
-    ).fetchone()[0]
+    return cur.lastrowid
 
 
 def add_profile(conn: sqlite3.Connection, name: str) -> int:
-    cur = conn.execute(
-        "INSERT OR IGNORE INTO profiles (name) VALUES (?)", (name,)
-    )
-    if cur.lastrowid:
-        return cur.lastrowid
-    return conn.execute(
+    row = conn.execute(
         "SELECT id FROM profiles WHERE name = ?", (name,)
-    ).fetchone()[0]
+    ).fetchone()
+    if row:
+        return row[0]
+    cur = conn.execute(
+        "INSERT INTO profiles (name) VALUES (?)", (name,)
+    )
+    return cur.lastrowid
 
 
 def add_study_plan(
@@ -178,7 +180,7 @@ def add_study_plan(
         row = conn.execute(
             """SELECT id FROM study_plans
                WHERE year = ? AND form = ? AND direction_id = ?
-               AND (profile_id IS ? OR (profile_id IS NULL AND ? IS NULL))""",
+               AND (profile_id = ? OR (profile_id IS NULL AND ? IS NULL))""",
             (year, form, direction_id, profile_id, profile_id),
         ).fetchone()
         return row[0] if row else -1
@@ -186,18 +188,11 @@ def add_study_plan(
 
 def add_discipline(conn: sqlite3.Connection, code: str | None, name: str) -> int:
     if code:
-        cur = conn.execute(
-            "INSERT OR IGNORE INTO disciplines (code, name) VALUES (?, ?)",
-            (code, name),
-        )
-        if cur.lastrowid:
-            return cur.lastrowid
         row = conn.execute(
             "SELECT id FROM disciplines WHERE code = ?", (code,)
         ).fetchone()
         if row:
             return row[0]
-    # без кода — всегда вставляем
     cur = conn.execute(
         "INSERT INTO disciplines (code, name) VALUES (?, ?)", (code, name)
     )
@@ -312,10 +307,19 @@ def find_plan_id(
            JOIN directions d ON d.id = sp.direction_id
            LEFT JOIN profiles p ON p.id = sp.profile_id
            WHERE sp.year = ? AND sp.form = ? AND d.code = ?
-           AND (p.name IS ? OR (p.name IS NULL AND ? IS NULL))""",
+           AND (p.name = ? OR (p.name IS NULL AND ? IS NULL))""",
         (year, form, direction_code, profile_name, profile_name),
     ).fetchone()
     return row[0] if row else None
+
+
+STUDY_PLANS = [
+    # (год_набора, форма, код_направления, название_направления, уровень, профиль)
+    (2023, "очная",   "09.03.01", "Информатика и вычислительная техника", "бакалавриат", "Программное обеспечение вычислительной техники и автоматизированных систем"),
+    (2023, "заочная", "09.03.01", "Информатика и вычислительная техника", "бакалавриат", "Программное обеспечение вычислительной техники и автоматизированных систем"),
+    (2024, "очная",   "09.03.01", "Информатика и вычислительная техника", "бакалавриат", "Автоматизированные системы и вычислительные машины в промышленных комплексах"),
+    (2025, "очная",   "09.04.01", "Информатика и вычислительная техника", "магистратура", "Технологии разработки и сопровождения систем искусственного интеллекта"),
+]
 
 
 if __name__ == "__main__":
@@ -323,70 +327,22 @@ if __name__ == "__main__":
     print(f"БД создана: {DB_PATH}")
     print()
 
-    # ---- Пример наполнения (тестовые данные) ----
-
-    # Направления
-    bach_id = add_direction(
-        conn, "09.03.01", "Информатика и вычислительная техника", "бакалавриат"
-    )
-    mag_id = add_direction(
-        conn, "09.04.01", "Информатика и вычислительная техника", "магистратура"
-    )
-
-    # Профили
-    prof_po = add_profile(conn, "Программное обеспечение ВТ и АС")
-    prof_apk = add_profile(conn, "АС и ВМ в ПК")
-
-    # Учебные планы
-    plan_2025_och = add_study_plan(conn, 2025, "очная", bach_id, prof_po)
-    plan_2025_zaoch = add_study_plan(conn, 2025, "заочная", bach_id, prof_po)
-    plan_2025_mag = add_study_plan(conn, 2025, "очная", mag_id, None)
-
-    # Дисциплины (основные)
-    d1 = add_discipline(conn, "Б1.О.01", "История")
-    d2 = add_discipline(conn, "Б1.О.02", "Иностранный язык")
-    d3 = add_discipline(conn, "Б1.В.01", "Программирование")
-    d4 = add_discipline(conn, "Б1.В.ДВ.01.01", "Теория вычислительных процессов")
-    d5 = add_discipline(conn, "Б1.В.02", "Базы данных")
-    d6 = add_discipline(conn, "Б1.В.03", "Web-технологии")
-
-    # Привязка к плану (очное 2025)
-    add_discipline_to_plan(conn, plan_2025_och, d1, semester=1,
-                           hours_total=108, hours_lecture=18, hours_practice=18,
-                           hours_self_study=72, credits=3, exam_form="зачёт")
-    add_discipline_to_plan(conn, plan_2025_och, d2, semester=1,
-                           hours_total=144, hours_lecture=0, hours_practice=36,
-                           hours_self_study=108, credits=4, exam_form="зачёт")
-    add_discipline_to_plan(conn, plan_2025_och, d3, semester=1,
-                           hours_total=288, hours_lecture=36, hours_lab=54,
-                           hours_self_study=162, hours_exam=36,
-                           credits=8, exam_form="экзамен")
-    add_discipline_to_plan(conn, plan_2025_och, d4, semester=6,
-                           hours_total=144, hours_lecture=32, hours_lab=32,
-                           hours_self_study=80, credits=4, exam_form="зачёт")
-    add_discipline_to_plan(conn, plan_2025_och, d5, semester=4,
-                           hours_total=180, hours_lecture=18, hours_lab=36,
-                           hours_self_study=90, hours_exam=36,
-                           credits=5, exam_form="экзамен")
-
-    # Привязка к плану (заочное 2025) — те же дисциплины, другие часы
-    add_discipline_to_plan(conn, plan_2025_zaoch, d1, semester=1,
-                           hours_total=108, hours_lecture=4, hours_practice=6,
-                           hours_self_study=98, credits=3, exam_form="зачёт")
-    add_discipline_to_plan(conn, plan_2025_zaoch, d3, semester=2,
-                           hours_total=288, hours_lecture=8, hours_lab=14,
-                           hours_self_study=230, hours_exam=36,
-                           credits=8, exam_form="экзамен")
-    add_discipline_to_plan(conn, plan_2025_zaoch, d4, semester=7,
-                           hours_total=144, hours_lecture=6, hours_lab=8,
-                           hours_self_study=130, credits=4, exam_form="зачёт")
+    # ---- Наполнение из учебных планов ----
+    for year, form, dir_code, dir_name, level, profile_name in STUDY_PLANS:
+        dir_id = add_direction(conn, dir_code, dir_name, level)
+        prof_id = add_profile(conn, profile_name) if profile_name else None
+        plan_id = add_study_plan(conn, year, form, dir_id, prof_id)
+        print(f"  Учебный план #{plan_id}: {year} / {form} / {dir_code} {dir_name} ({level})"
+              + (f" / {profile_name}" if profile_name else ""))
 
     conn.commit()
+    print()
 
     # ---- Вывод для проверки ----
+    print("=== Итоговый перечень учебных планов ===")
     for plan in get_study_plans(conn):
         plan_id = plan["id"]
-        print(f"Учебный план #{plan_id}: {plan['year']} / {plan['form']} / "
+        print(f"План #{plan_id}: {plan['year']} г.н. / {plan['form']} / "
               f"{plan['direction_code']} {plan['direction_name']} ({plan['level']})"
               + (f" / {plan['profile']}" if plan["profile"] else ""))
         for disc in get_disciplines_for_plan(conn, plan_id):
