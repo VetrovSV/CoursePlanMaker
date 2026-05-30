@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS study_plans (
 
 CREATE TABLE IF NOT EXISTS disciplines (
     id   INTEGER PRIMARY KEY AUTOINCREMENT,
-    code TEXT    UNIQUE,
+    code TEXT,
     name TEXT    NOT NULL
 );
 
@@ -187,12 +187,13 @@ def add_study_plan(
 
 
 def add_discipline(conn: sqlite3.Connection, code: str | None, name: str) -> int:
-    if code:
-        row = conn.execute(
-            "SELECT id FROM disciplines WHERE code = ?", (code,)
-        ).fetchone()
-        if row:
-            return row[0]
+    """Добавить дисциплину. Ищет сначала по (code, name) — один код может быть
+    у разных дисциплин в разных учебных планах."""
+    row = conn.execute(
+        "SELECT id FROM disciplines WHERE code = ? AND name = ?", (code, name)
+    ).fetchone()
+    if row:
+        return row[0]
     cur = conn.execute(
         "INSERT INTO disciplines (code, name) VALUES (?, ?)", (code, name)
     )
