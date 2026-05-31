@@ -3,7 +3,7 @@
 validate_fos.py — проверка соответствия ФОС и РП.
 
 Использование:
-    python3 validate_fos.py РП.БазыДанных.2025.md ФОС.БазыДанных.2025.md
+    python3 scripts/validate_fos.py docs/РП.БазыДанных.2025.md docs/ФОС.БазыДанных.2025.md
 
 Проверяет:
   1. YAML-шапки (все общие поля должны совпадать)
@@ -162,7 +162,7 @@ def check_attestation(rp_text: str, fos_text: str) -> list[str]:
 
 def main():
     if len(sys.argv) != 3:
-        print("Использование: python3 validate_fos.py <РП.md> <ФОС.md>")
+        print("Использование: python3 scripts/validate_fos.py <путь_к_РП.md> <путь_к_ФОС.md>")
         sys.exit(1)
 
     rp_path, fos_path = sys.argv[1], sys.argv[2]
