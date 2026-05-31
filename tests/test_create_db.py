@@ -102,15 +102,21 @@ class TestDisciplines:
         disc_id = add_discipline(c, None, "Временная дисциплина")
         assert disc_id > 0
 
-    def test_add_duplicate_code_returns_existing(self):
+    def test_add_duplicate_code_different_name_creates_new(self):
+        """Один код может быть у разных дисциплин — создаётся новая запись."""
         c = next(conn())
         id1 = add_discipline(c, "Б1.О.01", "Старое имя")
-        id2 = add_discipline(c, "Б1.О.01", "Новое имя")  # имя игнорируется, т.к. код уже есть
-        assert id1 == id2
+        id2 = add_discipline(c, "Б1.О.01", "Новое имя")
+        assert id1 != id2
+        assert id1 == 1
+        assert id2 == 2
 
-        # Убедимся, что имя осталось исходным
-        row = c.execute("SELECT name FROM disciplines WHERE id = ?", (id1,)).fetchone()
-        assert row[0] == "Старое имя"
+    def test_add_duplicate_code_and_name_returns_existing(self):
+        """Тот же (code, name) возвращает существующий id."""
+        c = next(conn())
+        id1 = add_discipline(c, "Б1.О.01", "ТВП")
+        id2 = add_discipline(c, "Б1.О.01", "ТВП")
+        assert id1 == id2
 
 
 # ---- Учебные планы ----
